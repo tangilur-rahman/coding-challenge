@@ -8,7 +8,7 @@ import { PaginationControls } from "@/views/products/paginationControls/paginati
 import { ProductList } from "@/views/products/productList/productList";
 import { ProductModal } from "@/views/products/productModal/productModal";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 export const Products: React.FC = () => {
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -54,9 +54,11 @@ export const Products: React.FC = () => {
 				totalPages={totalPages}
 				onPageChange={handlePageChange}
 			/>
-			{selectedProduct && (
-				<ProductModal product={selectedProduct} onClose={handleCloseModal} />
-			)}
+			<Suspense fallback={<div>Loading modal...</div>}>
+				{selectedProduct && (
+					<ProductModal product={selectedProduct} onClose={handleCloseModal} />
+				)}
+			</Suspense>
 		</div>
 	);
 };
