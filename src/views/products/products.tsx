@@ -8,7 +8,7 @@ import { PaginationControls } from "@/views/products/paginationControls/paginati
 import { ProductList } from "@/views/products/productList/productList";
 import { ProductModal } from "@/views/products/productModal/productModal";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 export const Products: React.FC = () => {
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -35,9 +35,9 @@ export const Products: React.FC = () => {
 		router.push(`?`, { scroll: false });
 	}, [router]);
 
-	// Open modal if productId exists in URL query
+	// Open modal if productId exists in URL query after component mounts
 	useEffect(() => {
-		const productId = searchParams.get("productId");
+		const productId = searchParams?.get("productId");
 		if (productId) {
 			const product = PRODUCTS_DATA.find((p) => p.id === productId);
 			if (product) setSelectedProduct(product);
@@ -54,11 +54,9 @@ export const Products: React.FC = () => {
 				totalPages={totalPages}
 				onPageChange={handlePageChange}
 			/>
-			<Suspense fallback={<div>Loading modal...</div>}>
-				{selectedProduct && (
-					<ProductModal product={selectedProduct} onClose={handleCloseModal} />
-				)}
-			</Suspense>
+			{selectedProduct && (
+				<ProductModal product={selectedProduct} onClose={handleCloseModal} />
+			)}
 		</div>
 	);
 };
