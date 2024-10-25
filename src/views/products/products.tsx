@@ -7,7 +7,7 @@ import { Product } from "@/types";
 import { PaginationControls } from "@/views/products/paginationControls/paginationControls";
 import { ProductList } from "@/views/products/productList/productList";
 import { ProductModal } from "@/views/products/productModal/productModal";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 
 export const Products: React.FC = () => {
@@ -20,7 +20,6 @@ export const Products: React.FC = () => {
 	} = usePagination({ items: PRODUCTS_DATA, itemsPerPage: 5 });
 
 	const router = useRouter();
-	const searchParams = useSearchParams();
 
 	const handleOpenModal = useCallback(
 		(product: Product) => {
@@ -35,14 +34,18 @@ export const Products: React.FC = () => {
 		router.push(`?`, { scroll: false });
 	}, [router]);
 
-	// Open modal if productId exists in URL query
+	// Open modal if productId exists in URL query after component mounts
 	useEffect(() => {
-		const productId = searchParams.get("productId");
-		if (productId) {
-			const product = PRODUCTS_DATA.find((p) => p.id === productId);
-			if (product) setSelectedProduct(product);
+		// Ensure this only runs on the client
+		if (typeof window !== "undefined") {
+			const params = new URLSearchParams(window.location.search);
+			const productId = params.get("productId");
+			if (productId) {
+				const product = PRODUCTS_DATA.find((p) => p.id === productId);
+				if (product) setSelectedProduct(product);
+			}
 		}
-	}, [searchParams]);
+	}, []);
 
 	return (
 		<div>
